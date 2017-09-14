@@ -3,6 +3,7 @@ package mlb;
  * @author Roman Yasinovskyy
  */
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+//import json thing here
 import java.util.ArrayList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 
@@ -117,7 +118,7 @@ public class Team {
      */
     @Override
     public String toString() {
-        // TODO: Implement this method
-        throw new UnsupportedOperationException();
+        int size = this.roster.size();
+        return String.format("%s\n%s | %s\n%s\nRoster size: %s", this.name, this.conference, this.division, this.address, size);
     }
 }
