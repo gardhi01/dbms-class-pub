@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -187,10 +188,21 @@ public class DatabaseWriter {
     public void writeAddressTable(String db_filename, ArrayList<Address> addressBook) throws SQLException {
         Connection db_connection = DriverManager.getConnection(SQLITEDBPATH + db_filename);
         db_connection.createStatement().execute("PRAGMA foreign_keys = ON;");
+        String sql = "INSERT INTO address(team, site, street, city, state, zip, phone, url) VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
         for (Address address: addressBook) {
+            Statement statement = db_connection.createStatement();
+            ResultSet results = statement.executeQuery("SELECT idpk FROM team WHERE team.name = '" + address.getTeam() + "';");
+            int team_id = results.getInt(1);
             // TODO: Write an SQL statement to insert a new address into a table
-            String sql = "";
             PreparedStatement statement_prepared = db_connection.prepareStatement(sql);
+            statement_prepared.setInt(1, team_id);
+            statement_prepared.setString(2, address.getSite());
+            statement_prepared.setString(3, address.getStreet());
+            statement_prepared.setString(4, address.getCity());
+            statement_prepared.setString(5, address.getState());
+            statement_prepared.setString(6, address.getZip());
+            statement_prepared.setString(7, address.getPhone());
+            statement_prepared.setString(8, address.getUrl());
             // TODO: match parameters of the SQL statement and address site, street, city, state, zip, phone, and url
             statement_prepared.executeUpdate();
         }
@@ -205,10 +217,17 @@ public class DatabaseWriter {
     public void writePlayerTable(String db_filename, ArrayList<Player> roster) throws SQLException {
         Connection db_connection = DriverManager.getConnection(SQLITEDBPATH + db_filename);
         db_connection.createStatement().execute("PRAGMA foreign_keys = ON;");
+        String sql = "INSERT INTO player(id, name, team, position) VALUES(?, ?, ?, ?);";
         for (Player player: roster) {
             // TODO: Write an SQL statement to insert a new player into a table
-            String sql = "";
+            Statement statement = db_connection.createStatement();
+            ResultSet results = statement.executeQuery("SELECT idpk FROM team WHERE team.name = '" + player.getTeam() + "';");
+            int team_id = results.getInt(1);
             PreparedStatement statement_prepared = db_connection.prepareStatement(sql);
+            statement_prepared.setString(1, player.getId());
+            statement_prepared.setString(2, player.getName());
+            statement_prepared.setInt(3, team_id);
+            statement_prepared.setString(4, player.getPosition());
             // TODO: match parameters of the SQL statement and player id, name, position
             statement_prepared.executeUpdate();
         }
