@@ -73,9 +73,19 @@ public class DatabaseWriter {
     }
     public ArrayList<Player> readPlayerFromCsv(String filename) {
         ArrayList<Player> roster = new ArrayList<>();
-        CSVReader reader = null;
+        try {
+        CSVReader reader = new CSVReader(new FileReader(filename), ',');
+        String[] record = reader.readNext();
+        while ((record = reader.readNext()) != null) {
+            Player p = new Player(record[0], record[1], record[3], record[4]);
+            roster.add(p);
+        }
+        reader.close();
+        System.out.println(roster);
         // TODO: Read the CSV file, create an object of type Player from each line and add it to the ArrayList
-        
+        } catch (IOException ex) {
+            Logger.getLogger(DatabaseReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return roster;
     }
     /**
@@ -153,9 +163,16 @@ public class DatabaseWriter {
         Connection db_connection = DriverManager.getConnection(SQLITEDBPATH + db_filename);
         db_connection.createStatement().execute("PRAGMA foreign_keys = ON;");
         // TODO: Write an SQL statement to insert a new team into a table
-        String sql = "";
+        String sql = "INSERT INTO team(id, abbr, name, conference, division, logo) VALUES (?, ?, ?, ?, ?, ?);";
         for (Team team: league) {
+            byte[] logobytes = readLogoFile("mlb_logo_" + team.getAbbreviation() + ".jpg");
             PreparedStatement statement_prepared = db_connection.prepareStatement(sql);
+            statement_prepared.setString(1, team.getId());
+            statement_prepared.setString(2, team.getAbbreviation());
+            statement_prepared.setString(3, team.getName());
+            statement_prepared.setString(4, team.getConference());
+            statement_prepared.setString(5, team.getDivision());
+            statement_prepared.setBytes(6, logobytes);
             // TODO: match parameters of the SQL statement and team id, abbreviation, name, conference, division, and logo
             statement_prepared.executeUpdate();
         }

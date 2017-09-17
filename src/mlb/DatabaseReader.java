@@ -48,8 +48,12 @@ public class DatabaseReader {
         try {
             stat = this.db_connection.createStatement();
             // TODO: Write an SQL statement to retrieve a league (conference) and a division
-            String sql = "";
+            String sql = "Select distinct team_conference, team_division from teams";
+            results = stat.executeQuery(sql);
+            // should have 6 combinations
             // TODO: Add all 6 combinations to the ArrayList divisions
+            divisions.add(results.getString(1) + " | " + results.getString(2));
+            results.close();
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseReader.class.getName()).log(Level.SEVERE, null, ex);
         } finally {

@@ -40,6 +40,7 @@ public class SQLTester extends javax.swing.JFrame {
 
         jTextAreaQuery.setColumns(20);
         jTextAreaQuery.setRows(5);
+        jTextAreaQuery.setText("select * from teams");
         jScrollPane1.setViewportView(jTextAreaQuery);
 
         jButtonSubmit.setText("Run!");
