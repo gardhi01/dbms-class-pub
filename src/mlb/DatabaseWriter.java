@@ -193,6 +193,7 @@ public class DatabaseWriter {
             Statement statement = db_connection.createStatement();
             ResultSet results = statement.executeQuery("SELECT idpk FROM team WHERE team.name = '" + address.getTeam() + "';");
             int team_id = results.getInt(1);
+            results.close();
             // TODO: Write an SQL statement to insert a new address into a table
             PreparedStatement statement_prepared = db_connection.prepareStatement(sql);
             statement_prepared.setInt(1, team_id);
@@ -223,6 +224,7 @@ public class DatabaseWriter {
             Statement statement = db_connection.createStatement();
             ResultSet results = statement.executeQuery("SELECT idpk FROM team WHERE team.name = '" + player.getTeam() + "';");
             int team_id = results.getInt(1);
+            results.close();
             PreparedStatement statement_prepared = db_connection.prepareStatement(sql);
             statement_prepared.setString(1, player.getId());
             statement_prepared.setString(2, player.getName());
