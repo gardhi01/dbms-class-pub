@@ -166,7 +166,7 @@ public class DatabaseWriter {
         // TODO: Write an SQL statement to insert a new team into a table
         String sql = "INSERT INTO team(id, abbr, name, conference, division, logo) VALUES (?, ?, ?, ?, ?, ?);";
         for (Team team: league) {
-            byte[] logobytes = readLogoFile("mlb_logo_" + team.getAbbreviation() + ".jpg");
+            byte[] logobytes = readLogoFile("images/mlb_logo_" + team.getAbbreviation().toLowerCase() + ".jpg");
             PreparedStatement statement_prepared = db_connection.prepareStatement(sql);
             statement_prepared.setString(1, team.getId());
             statement_prepared.setString(2, team.getAbbreviation());
