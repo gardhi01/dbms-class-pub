@@ -97,7 +97,38 @@ public class DatabaseReader {
      */
     public Team getTeamInfo(String teamName) {
         Team team = null;
+        ArrayList<Player> roster = new ArrayList();
         // TODO: Retrieve team info (roster, address, and logo) from the database
+        Statement stat;
+        ResultSet results;
+        this.connect();
+        try {
+            stat = this.db_connection.createStatement();
+            String sql = "SELECT * FROM team WHERE name = '" + teamName + "';";
+            results = stat.executeQuery(sql);
+            int idpk = results.getInt(1);
+            System.out.println(idpk);
+            team = new Team(results.getString(2), results.getString(3), results.getString(4), results.getString(5), results.getString(6));
+            team.setLogo(results.getBytes(7));
+            sql = "SELECT * FROM address WHERE address.team = " + idpk + ";";
+            results = stat.executeQuery(sql);
+            Address address = new Address(teamName, results.getString(3), results.getString(4), results.getString(5), results.getString(6), results.getString(7), results.getString(8), results.getString(9));
+            team.setAddress(address);
+            System.out.println(idpk);
+            sql = "SELECT * FROM player WHERE player.team = " + idpk + ";";
+            results = stat.executeQuery(sql);
+
+            while (results.next()) {
+                Player player = new Player(results.getString(2), results.getString(3), teamName, results.getString(5));
+                roster.add(player);
+            }
+            team.setRoster(roster);
+            results.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseReader.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            this.disconnect();
+        }
         return team;
     }
 }

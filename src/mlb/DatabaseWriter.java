@@ -78,7 +78,7 @@ public class DatabaseWriter {
         CSVReader reader = new CSVReader(new FileReader(filename), ',');
         String[] record = reader.readNext();
         while ((record = reader.readNext()) != null) {
-            Player p = new Player(record[0], record[1], record[3], record[4]);
+            Player p = new Player(record[0], record[1], record[4], record[2]);
             roster.add(p);
         }
         reader.close();
@@ -217,14 +217,15 @@ public class DatabaseWriter {
      */
     public void writePlayerTable(String db_filename, ArrayList<Player> roster) throws SQLException {
         Connection db_connection = DriverManager.getConnection(SQLITEDBPATH + db_filename);
+        Statement statement;
+        ResultSet results;
         db_connection.createStatement().execute("PRAGMA foreign_keys = ON;");
         String sql = "INSERT INTO player(id, name, team, position) VALUES(?, ?, ?, ?);";
         for (Player player: roster) {
-            // TODO: Write an SQL statement to insert a new player into a table
-            Statement statement = db_connection.createStatement();
-            ResultSet results = statement.executeQuery("SELECT idpk FROM team WHERE team.name = '" + player.getTeam() + "';");
+            statement = db_connection.createStatement();
+            results = statement.executeQuery("SELECT idpk FROM team WHERE team.name = '" + player.getTeam() + "';");
             int team_id = results.getInt(1);
-            results.close();
+            // TODO: Write an SQL statement to insert a new player into a table
             PreparedStatement statement_prepared = db_connection.prepareStatement(sql);
             statement_prepared.setString(1, player.getId());
             statement_prepared.setString(2, player.getName());
@@ -232,8 +233,8 @@ public class DatabaseWriter {
             statement_prepared.setString(4, player.getPosition());
             // TODO: match parameters of the SQL statement and player id, name, position
             statement_prepared.executeUpdate();
+            results.close();
         }
-        
         db_connection.close();
     }
 }
